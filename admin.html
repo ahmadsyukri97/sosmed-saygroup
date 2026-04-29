@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOSMED SAYGROUP · Admin Master</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs }
+  from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0vyuCR2fUMDsvRQhVoLedG8m1cLzuxiE",
+  authDomain: "sosmed-saygroup.firebaseapp.com",
+  databaseURL: "https://sosmed-saygroup-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "sosmed-saygroup",
+  storageBucket: "sosmed-saygroup.firebasestorage.app",
+  messagingSenderId: "800150642219",
+  appId: "1:800150642219:web:33b109d6df1691ac47d46e",
+  measurementId: "G-JPV4B0X456"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db_fs = getFirestore(app);
+
+window._auth = auth;
+window._db_fs = db_fs;
+window._fsDoc = doc;
+window._fsGetDoc = getDoc;
+window._fsSetDoc = setDoc;
+window._fsOnSnapshot = onSnapshot;
+window._fsCollection = collection;
+window._fsGetDocs = getDocs;
+window._signInWithEmailAndPassword = signInWithEmailAndPassword;
+window._signOut = signOut;
+window._onAuthStateChanged = onAuthStateChanged;
+
+onAuthStateChanged(auth, (user) => {
+  window._currentUser = user;
+  if (window.onAuthReady) window.onAuthReady(user);
+});
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f17; --bg2: #16161f; --bg3: #1e1e2a; --bg4: #252535;
+    --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+    --text: #f0effe; --text2: rgba(240,239,254,0.6); --text3: rgba(240,239,254,0.35);
+    --purple: #7f77dd; --purple-light: #a59ef0;
+    --green: #1d9e75; --orange: #ef9f27; --red: #d85a30; --blue: #378add; --pink: #d4537e;
+    --sidebar-w: 210px;
+  }
+  body.light {
+    --bg: #f4f4fb; --bg2: #ffffff; --bg3: #f0f0f8; --bg4: #e6e6f0;
+    --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14);
+    --text: #1a1a2e; --text2: rgba(26,26,46,0.65); --text3: rgba(26,26,46,0.38);
+    --purple: #6c63d4; --purple-light: #7f77dd;
+  }
+  body.light .btn-danger { background: rgba(168,45,45,0.1); border-color: rgba(168,45,45,0.2); }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; flex-direction: column; gap: 0;
+  }
+  .login-box {
+    background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 40px 36px; width: 360px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+  }
+  .login-logo { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; letter-spacing: -0.3px; }
+  .login-logo span { color: var(--purple-light); }
+  .login-sub { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+  .login-badge { display: inline-block; background: rgba(127,119,221,0.15); color: var(--purple-light); border: 1px solid rgba(127,119,221,0.3); border-radius: 6px; font-size: 10px; font-family: 'DM Mono', monospace; padding: 3px 10px; margin-bottom: 22px; letter-spacing: 0.5px; }
+  .login-title { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 20px; }
+  .login-field { margin-bottom: 14px; }
+  .login-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-family: 'DM Mono', monospace; display: block; margin-bottom: 6px; }
+  .login-input { width: 100%; background: var(--bg4); border: 1px solid var(--border2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; }
+  .login-input:focus { border-color: var(--purple); }
+  .login-input::placeholder { color: var(--text3); }
+  .login-btn { width: 100%; padding: 11px; border-radius: 8px; background: var(--purple); color: #fff; font-size: 13px; font-weight: 600; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 6px; transition: background 0.15s; }
+  .login-btn:hover { background: var(--purple-light); }
+  .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .login-err { font-size: 11px; color: #e07070; margin-top: 10px; text-align: center; min-height: 16px; }
+  .login-link { text-align: center; margin-top: 18px; }
+  .login-link a { font-size: 12px; color: var(--text3); cursor: pointer; text-decoration: underline; transition: color 0.15s; }
+  .login-link a:hover { color: var(--text2); }
+
+  /* ── LOADING ── */
+  #loading-overlay {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 8888; flex-direction: column; gap: 16px;
+  }
+  .loading-spinner { width: 32px; height: 32px; border: 2px solid var(--border2); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 0; height: 100vh; overflow-y: auto; }
+  .sidebar-logo { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); }
+  .logo-text { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+  .logo-text span { color: var(--purple-light); }
+  .logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: 'DM Mono', monospace; }
+  .logo-badge { display: inline-block; background: rgba(127,119,221,0.15); color: var(--purple-light); border: 1px solid rgba(127,119,221,0.25); border-radius: 4px; font-size: 9px; font-family: 'DM Mono', monospace; padding: 2px 7px; margin-top: 6px; letter-spacing: 0.5px; }
+  .nav-section { font-size: 9px; color: var(--text3); padding: 16px 20px 6px; letter-spacing: 1px; text-transform: uppercase; font-family: 'DM Mono', monospace; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; color: var(--text2); cursor: pointer; border-left: 2px solid transparent; transition: all 0.15s; user-select: none; }
+  .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+  .nav-item.active { background: rgba(127,119,221,0.12); color: var(--purple-light); border-left-color: var(--purple); font-weight: 500; }
+  .nav-dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
+  .sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border); padding: 12px 0; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 5px; }
+  .sync-dot.syncing { background: var(--orange); animation: pulse 1s infinite; }
+  .sync-dot.error { background: #e07070; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; height: 100vh; }
+  .topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; height: 54px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .page-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 11px; padding: 3px 10px; border-radius: 999px; font-weight: 500; font-family: 'DM Mono', monospace; }
+  .badge-purple { background: rgba(127,119,221,0.15); color: var(--purple-light); border: 1px solid rgba(127,119,221,0.25); }
+  .badge-master { background: rgba(239,159,39,0.15); color: #f0b84a; border: 1px solid rgba(239,159,39,0.25); font-size: 10px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 600; cursor: pointer; position: relative; }
+  .avatar-menu { position: absolute; top: 38px; right: 0; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 6px; min-width: 160px; z-index: 200; box-shadow: 0 8px 32px rgba(0,0,0,0.4); display: none; }
+  .avatar-menu.open { display: block; }
+  .avatar-menu-item { padding: 8px 12px; font-size: 12px; color: var(--text2); cursor: pointer; border-radius: 5px; }
+  .avatar-menu-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .avatar-menu-item.danger { color: #e07070; }
+  .page-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+  .theme-toggle { width: 34px; height: 20px; border-radius: 999px; background: var(--bg4); border: 1px solid var(--border2); cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+  .theme-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--purple); transition: transform 0.2s; }
+  body.light .theme-toggle::after { transform: translateX(14px); }
+  .theme-label { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── CARDS / FORMS ── */
+  .card { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  .card-title-sub { font-size: 11px; color: var(--text3); font-weight: 400; }
+  .section-header { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .section-header::before { content: ''; display: inline-block; width: 3px; height: 14px; background: var(--purple); border-radius: 2px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+  .form-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-family: 'DM Mono', monospace; }
+  .form-input, .form-select { background: var(--bg4); border: 1px solid var(--border2); border-radius: 7px; padding: 9px 12px; font-size: 13px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; width: 100%; }
+  .form-input:focus, .form-select:focus { border-color: var(--purple); }
+  .form-select option { background: var(--bg3); }
+  .form-input::placeholder { color: var(--text3); }
+  .form-input[type="date"] { color-scheme: dark; }
+  body.light .form-input[type="date"] { color-scheme: light; }
+  .form-actions { display: flex; gap: 8px; margin-top: 16px; align-items: center; }
+  .btn { padding: 9px 20px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+  .btn-primary { background: var(--purple); color: #fff; }
+  .btn-primary:hover { background: var(--purple-light); }
+  .btn-secondary { background: var(--bg4); color: var(--text2); border: 1px solid var(--border2); }
+  .btn-secondary:hover { background: var(--bg3); color: var(--text); }
+  .btn-danger { background: rgba(168,45,45,0.2); color: #e07070; border: 1px solid rgba(168,45,45,0.3); }
+  .btn-danger:hover { background: rgba(168,45,45,0.35); }
+  .btn-sm { padding: 5px 12px; font-size: 11px; border-radius: 5px; }
+  .info-text { font-size: 11px; color: var(--text3); margin-bottom: 14px; }
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+  .table-scroll { overflow-x: auto; }
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th { text-align: left; padding: 0 10px 10px; font-size: 10px; color: var(--text3); font-weight: 500; font-family: 'DM Mono', monospace; border-bottom: 1px solid var(--border); letter-spacing: 0.3px; }
+  .data-table th:not(:first-child) { text-align: right; }
+  .data-table td { padding: 8px 10px; font-size: 12px; color: var(--text2); border-bottom: 1px solid var(--border); }
+  .data-table td:not(:first-child) { text-align: right; font-family: 'DM Mono', monospace; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .td-name { color: var(--text); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .acct-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .acct-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+  .acct-row:last-child { border-bottom: none; }
+  .acct-name { font-size: 12px; color: var(--text); flex: 1; font-weight: 500; }
+  .data-row-actions { opacity: 0; transition: opacity 0.15s; display: flex; gap: 4px; }
+  .data-table tr:hover .data-row-actions { opacity: 1; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 12px 18px; font-size: 13px; color: var(--text); box-shadow: 0 8px 32px rgba(0,0,0,0.4); transform: translateY(80px); opacity: 0; transition: all 0.3s ease; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .toast-dot.red { background: #e07070; }
+  /* SETTINGS TABS */
+  .settings-tabs { display: flex; gap: 4px; margin-bottom: 18px; background: var(--bg3); border: 1px solid var(--border); border-radius: 9px; padding: 4px; width: fit-content; }
+  .settings-tab { padding: 7px 18px; font-size: 12px; font-weight: 500; border-radius: 6px; cursor: pointer; border: none; background: transparent; color: var(--text3); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+  .settings-tab:hover { color: var(--text2); background: rgba(255,255,255,0.04); }
+  .settings-tab.active { background: var(--bg4); color: var(--text); border: 1px solid var(--border2); }
+  .settings-panel { display: none; }
+  .settings-panel.active { display: block; }
+  .danger-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
+  .danger-item-info { flex: 1; }
+  .danger-item-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .danger-item-desc { font-size: 11px; color: var(--text3); }
+  /* TARGET */
+  .progress-item { margin-bottom: 12px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); margin-bottom: 5px; }
+  .progress-pct { font-family: 'DM Mono', monospace; font-size: 11px; }
+  .progress-bar { height: 5px; background: var(--bg4); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 999px; transition: width 0.5s ease; }
+  .up { color: #5dcba8; } .dn { color: #e07070; }
+  /* HAMBURGER */
+  .hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 36px; height: 36px; cursor: pointer; padding: 5px; border-radius: 7px; background: transparent; border: none; }
+  .hamburger span { display: block; width: 18px; height: 1.5px; background: var(--text2); border-radius: 2px; transition: all 0.25s; transform-origin: center; }
+  .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; }
+  .sidebar-overlay.open { display: block; }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+  @media (max-width: 768px) {
+    .hamburger { display: flex; }
+    .sidebar { position: fixed; left: -230px; top: 0; z-index: 100; transition: left 0.25s ease; height: 100vh; }
+    .sidebar.open { left: 0; }
+    .two-col { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid-2 { grid-template-columns: 1fr; }
+    .page-body { padding: 14px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Menghubungkan ke Firebase...</div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="display:none;">
+  <div class="login-box">
+    <div class="login-logo">SOSMED <span>SAYGROUP</span></div>
+    <div class="login-sub">Next Level Up</div>
+    <div class="login-badge">⚡ ADMIN MASTER PORTAL</div>
+    <div class="login-title">Login untuk melanjutkan</div>
+    <div class="login-field">
+      <label class="login-label">Email</label>
+      <input type="email" class="login-input" id="login-email" placeholder="email@domain.com" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input type="password" class="login-input" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Masuk sebagai Master</button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-link">
+      <a href="index.html">← Kembali ke Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">SOSMED <span>SAYGROUP</span></div>
+    <div class="logo-sub">Next Level Up</div>
+    <div class="logo-badge">⚡ MASTER PORTAL</div>
+  </div>
+  <div class="nav-section">Input & Data</div>
+  <div class="nav-item active" onclick="navigate('input-data')">
+    <div class="nav-dot" style="background:var(--orange);"></div> Input Data
+  </div>
+  <div class="nav-item" onclick="navigate('riwayat')">
+    <div class="nav-dot" style="background:var(--blue);"></div> Riwayat Data
+  </div>
+  <div class="nav-section">Konfigurasi</div>
+  <div class="nav-item" onclick="navigate('kelola-admin')">
+    <div class="nav-dot" style="background:var(--green);"></div> Kelola Admin
+  </div>
+  <div class="nav-item" onclick="navigate('kelola-akun')">
+    <div class="nav-dot" style="background:var(--pink);"></div> Kelola Akun
+  </div>
+  <div class="nav-item" onclick="navigate('target')">
+    <div class="nav-dot" style="background:var(--red);"></div> Set Target
+  </div>
+  <div class="nav-item" onclick="navigate('settings')">
+    <div class="nav-dot" style="background:var(--purple);"></div> Pengaturan
+  </div>
+  <div class="sidebar-bottom">
+    <div class="nav-section">Status</div>
+    <div class="nav-item" id="nav-sync" style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;cursor:default;">
+      <span class="sync-dot" id="sync-dot"></span><span id="sync-text"> Tersinkron</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='index.html'" style="font-size:12px;">
+      <div class="nav-dot" style="background:var(--text3);"></div> Buka Dashboard
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main-panel" style="display:none;">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="page-title" id="topbar-title">Input Data</div>
+    </div>
+    <div class="topbar-right">
+      <span class="badge badge-master">⚡ MASTER</span>
+      <span class="badge badge-purple" id="badge-count">— Admin · — Akun</span>
+      <span class="theme-label" id="theme-label">Dark</span>
+      <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark"></div>
+      <div class="avatar" id="topbar-avatar" onclick="toggleAvatarMenu()">
+        <span id="avatar-initials">M</span>
+        <div class="avatar-menu" id="avatar-menu">
+          <div class="avatar-menu-item" id="menu-user-email" style="color:var(--text3);font-size:10px;font-family:'DM Mono',monospace;cursor:default;border-bottom:1px solid var(--border);margin-bottom:4px;padding-bottom:8px;"></div>
+          <div class="avatar-menu-item" onclick="window.location.href='index.html'">← Dashboard Utama</div>
+          <div class="avatar-menu-item danger" onclick="doLogout()">Logout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- ═══ INPUT DATA ═══ -->
+    <div class="view active" id="view-input-data">
+      <div class="section-header">Input Data Performa</div>
+      <p class="info-text">Masukkan data performa mingguan untuk setiap akun yang dikelola admin.</p>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">Form Input Data <span class="card-title-sub" id="edit-mode-label"></span></div>
+        <input type="hidden" id="edit-entry-id">
+
+        <!-- Row 1: Admin, Akun, Periode -->
+        <div class="form-grid" style="margin-bottom:14px;">
+          <div class="form-field">
+            <label class="form-label">Admin</label>
+            <select class="form-select" id="input-admin" onchange="populateAkunDropdown()"><option value="">Pilih admin...</option></select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Akun</label>
+            <select class="form-select" id="input-akun"><option value="">Pilih akun...</option></select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Periode</label>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <input type="date" class="form-input" id="input-periode-start" style="flex:1;" onchange="updatePeriodeLabel()">
+              <span style="color:var(--text3);font-size:11px;white-space:nowrap;">s/d</span>
+              <input type="date" class="form-input" id="input-periode-end" style="flex:1;" onchange="updatePeriodeLabel()">
+            </div>
+            <div id="periode-preview" style="font-size:10px;color:var(--purple-light);font-family:'DM Mono',monospace;margin-top:4px;min-height:14px;"></div>
+            <input type="hidden" id="input-periode">
+          </div>
+        </div>
+
+        <!-- Umum -->
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-family:'DM Mono',monospace;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">📊 Umum</div>
+        <div class="form-grid-2" style="margin-bottom:14px;">
+          <div class="form-field"><label class="form-label">Akun Dijangkau (Reach)</label><input type="number" class="form-input" id="input-reach" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Profil Visit</label><input type="number" class="form-input" id="input-visit" placeholder="0"></div>
+        </div>
+
+        <!-- Postingan -->
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-family:'DM Mono',monospace;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">🖼 Postingan</div>
+        <div class="form-grid" style="margin-bottom:14px;">
+          <div class="form-field"><label class="form-label">Like</label><input type="number" class="form-input" id="input-post-like" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Comment</label><input type="number" class="form-input" id="input-post-comment" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Saves</label><input type="number" class="form-input" id="input-post-saves" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Share</label><input type="number" class="form-input" id="input-post-share" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Repost</label><input type="number" class="form-input" id="input-post-repost" placeholder="0"></div>
+        </div>
+
+        <!-- Reels -->
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-family:'DM Mono',monospace;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">🎬 Reels</div>
+        <div class="form-grid" style="margin-bottom:4px;">
+          <div class="form-field"><label class="form-label">Like</label><input type="number" class="form-input" id="input-reel-like" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Comment</label><input type="number" class="form-input" id="input-reel-comment" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Saves</label><input type="number" class="form-input" id="input-reel-saves" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Share</label><input type="number" class="form-input" id="input-reel-share" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Repost</label><input type="number" class="form-input" id="input-reel-repost" placeholder="0"></div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="save-btn" onclick="saveData()">💾 Simpan Data</button>
+          <button class="btn btn-secondary" onclick="clearForm()">Reset Form</button>
+          <button class="btn btn-secondary" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none;">Batal Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ RIWAYAT DATA ═══ -->
+    <div class="view" id="view-riwayat">
+      <div class="section-header">Riwayat Data</div>
+      <div class="card">
+        <div class="card-title">Semua Entri <span class="card-title-sub" id="riwayat-count-label"></span></div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <select class="form-select" id="filter-admin-riwayat" style="width:auto;min-width:140px;" onchange="renderRiwayat()">
+            <option value="">Semua Admin</option>
+          </select>
+          <select class="form-select" id="filter-akun-riwayat" style="width:auto;min-width:140px;" onchange="renderRiwayat()">
+            <option value="">Semua Akun</option>
+          </select>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr>
+              <th>Admin</th><th>Akun</th><th>Periode</th>
+              <th>Reach</th><th>Visit</th>
+              <th>Post Like</th><th>Post Cmt</th><th>Post Save</th><th>Post Share</th><th>Post Repost</th>
+              <th>Reel Like</th><th>Reel Cmt</th><th>Reel Save</th><th>Reel Share</th><th>Reel Repost</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="riwayat-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ KELOLA ADMIN ═══ -->
+    <div class="view" id="view-kelola-admin">
+      <div class="section-header">Kelola Admin</div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Tambah Admin Baru</div>
+          <div class="form-field" style="margin-bottom:10px;">
+            <label class="form-label">Nama Admin</label>
+            <input type="text" class="form-input" id="new-admin-name" placeholder="Nama admin baru...">
+          </div>
+          <div class="form-field" style="margin-bottom:14px;">
+            <label class="form-label">Warna</label>
+            <select class="form-select" id="new-admin-color">
+              <option value="#7f77dd">🟣 Ungu</option>
+              <option value="#1d9e75">🟢 Hijau</option>
+              <option value="#ef9f27">🟠 Oranye</option>
+              <option value="#d85a30">🔴 Merah</option>
+              <option value="#378add">🔵 Biru</option>
+              <option value="#d4537e">🩷 Pink</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="addAdmin()">+ Tambah Admin</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Daftar Admin <span class="card-title-sub">klik Edit untuk ubah</span></div>
+          <div id="admin-list"></div>
+        </div>
+      </div>
+      <!-- Edit Admin Panel -->
+      <div id="edit-admin-panel" style="display:none;margin-top:0;">
+        <div class="card" style="border-color:var(--purple);margin-bottom:14px;">
+          <div class="card-title">✏ Edit Admin</div>
+          <input type="hidden" id="edit-admin-id">
+          <div class="form-grid-2" style="margin-bottom:12px;">
+            <div class="form-field">
+              <label class="form-label">Nama Admin</label>
+              <input type="text" class="form-input" id="edit-admin-name" placeholder="Nama baru...">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Warna</label>
+              <select class="form-select" id="edit-admin-color">
+                <option value="#7f77dd">🟣 Ungu</option>
+                <option value="#1d9e75">🟢 Hijau</option>
+                <option value="#ef9f27">🟠 Oranye</option>
+                <option value="#d85a30">🔴 Merah</option>
+                <option value="#378add">🔵 Biru</option>
+                <option value="#d4537e">🩷 Pink</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveEditAdmin()">Simpan Perubahan</button>
+            <button class="btn btn-secondary" onclick="cancelEditAdmin()">Batal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ KELOLA AKUN ═══ -->
+    <div class="view" id="view-kelola-akun">
+      <div class="section-header">Kelola Akun Sosial Media</div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Tambah Akun Baru</div>
+          <div class="form-field" style="margin-bottom:10px;">
+            <label class="form-label">Username Akun</label>
+            <input type="text" class="form-input" id="new-akun-name" placeholder="@username">
+          </div>
+          <div class="form-field" style="margin-bottom:10px;">
+            <label class="form-label">Platform</label>
+            <select class="form-select" id="new-akun-platform">
+              <option value="Instagram">Instagram</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Twitter/X">Twitter/X</option>
+              <option value="Facebook">Facebook</option>
+              <option value="YouTube">YouTube</option>
+              <option value="LinkedIn">LinkedIn</option>
+            </select>
+          </div>
+          <div class="form-field" style="margin-bottom:14px;">
+            <label class="form-label">Dikelola oleh Admin</label>
+            <select class="form-select" id="new-akun-admin"><option value="">Pilih admin...</option></select>
+          </div>
+          <button class="btn btn-primary" onclick="addAkun()">+ Tambah Akun</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Daftar Akun</div>
+          <div id="akun-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TARGET ═══ -->
+    <div class="view" id="view-target">
+      <div class="section-header">Set Target Bulanan</div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Set Target</div>
+          <p class="info-text">Masukkan target total semua admin untuk bulan ini.</p>
+          <div class="form-grid-2" style="margin-bottom:12px;">
+            <div class="form-field"><label class="form-label">Bulan Target</label><input type="text" class="form-input" id="target-bulan" placeholder="cth: Apr 2026"></div>
+            <div class="form-field"><label class="form-label">Target Reach</label><input type="number" class="form-input" id="target-reach" placeholder="0"></div>
+            <div class="form-field"><label class="form-label">Target Like</label><input type="number" class="form-input" id="target-like" placeholder="0"></div>
+            <div class="form-field"><label class="form-label">Target Saves</label><input type="number" class="form-input" id="target-saves" placeholder="0"></div>
+            <div class="form-field"><label class="form-label">Target Shares</label><input type="number" class="form-input" id="target-shares" placeholder="0"></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveTarget()">💾 Simpan Target</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Capaian Saat Ini</div>
+          <div id="target-progress-panel"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SETTINGS ═══ -->
+    <div class="view" id="view-settings">
+      <div class="section-header">Pengaturan</div>
+      <div class="settings-tabs">
+        <button class="settings-tab active" onclick="switchSettingsTab('profil', this)">Profil Dashboard</button>
+        <button class="settings-tab" onclick="switchSettingsTab('danger', this)">Zona Bahaya</button>
+      </div>
+
+      <!-- TAB: PROFIL -->
+      <div class="settings-panel active" id="stab-profil">
+        <div class="card" style="max-width:480px;">
+          <div class="card-title">Identitas Dashboard</div>
+          <p class="info-text">Perubahan disimpan ke Firestore dan berlaku untuk semua pengguna.</p>
+          <div class="form-field" style="margin-bottom:10px;">
+            <label class="form-label">Nama Aplikasi</label>
+            <input type="text" class="form-input" id="profil-appname" placeholder="cth: SOSMED SAYGROUP">
+          </div>
+          <div class="form-field" style="margin-bottom:10px;">
+            <label class="form-label">Tagline / Sub Teks</label>
+            <input type="text" class="form-input" id="profil-orgname" placeholder="cth: Next Level Up">
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveProfilDashboard()">💾 Simpan Profil</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: ZONA BAHAYA -->
+      <div class="settings-panel" id="stab-danger">
+        <div class="card" style="max-width:520px;border-color:rgba(168,45,45,0.3);">
+          <div class="card-title" style="color:#e07070;">⚠ Zona Bahaya</div>
+          <p class="info-text">Tindakan berikut permanen dan langsung mempengaruhi semua pengguna.</p>
+          <div class="danger-item">
+            <div class="danger-item-info">
+              <div class="danger-item-title">Reset Semua Data Entri</div>
+              <div class="danger-item-desc">Hapus semua riwayat data performa. Admin dan akun tidak terpengaruh.</div>
+            </div>
+            <button class="btn btn-danger" onclick="resetDataOnly()">Reset Data</button>
+          </div>
+          <div class="divider"></div>
+          <div class="danger-item">
+            <div class="danger-item-info">
+              <div class="danger-item-title">Reset Total (Factory Reset)</div>
+              <div class="danger-item-desc">Kembalikan semua data ke kondisi awal. Seluruh data Firestore akan terhapus.</div>
+            </div>
+            <button class="btn btn-danger" onclick="resetAll()">Factory Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-body -->
+</div><!-- /main -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot" id="toast-dot"></div>
+  <span id="toast-msg">Tersimpan!</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let db = { admins: [], akuns: [], dataEntries: [], target: {}, profil: {} };
+let currentView = 'input-data';
+let isMaster = false;
+let unsubscribe = null;
+let editingEntryId = null;
+
+// ══════════════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════════════
+window.onAuthReady = function(user) {
+  document.getElementById('loading-overlay').style.display = 'none';
+  if (user) {
+    isMaster = true;
+    enterMasterPortal(user);
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+};
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Masuk...';
+  try {
+    await window._signInWithEmailAndPassword(window._auth, email, pw);
+  } catch(e) {
+    errEl.textContent = e.code === 'auth/invalid-credential' ? 'Email atau password salah.' : 'Login gagal: ' + e.message;
+    btn.disabled = false;
+    btn.textContent = 'Masuk sebagai Master';
+  }
+}
+
+function enterMasterPortal(user) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-panel').style.display = 'flex';
+  const initials = user.email.slice(0,2).toUpperCase();
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('menu-user-email').textContent = user.email;
+  startFirestoreListener();
+  navigate('input-data');
+}
+
+async function doLogout() {
+  toggleAvatarMenu();
+  await window._signOut(window._auth);
+  location.reload();
+}
+
+function toggleAvatarMenu() {
+  document.getElementById('avatar-menu').classList.toggle('open');
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#topbar-avatar')) {
+    document.getElementById('avatar-menu').classList.remove('open');
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+// FIRESTORE
+// ══════════════════════════════════════════════════════════════
+function setSyncState(state) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  if (state === 'syncing') { dot.className = 'sync-dot syncing'; txt.textContent = ' Menyinkron...'; }
+  else if (state === 'ok') { dot.className = 'sync-dot'; txt.textContent = ' Tersinkron'; }
+  else { dot.className = 'sync-dot error'; txt.textContent = ' Gagal sync'; }
+}
+
+function startFirestoreListener() {
+  const docRef = window._fsDoc(window._db_fs, 'sosmedhq', 'data');
+  setSyncState('syncing');
+  unsubscribe = window._fsOnSnapshot(docRef, (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      db.admins = data.admins || [];
+      db.akuns = data.akuns || [];
+      db.dataEntries = data.dataEntries || [];
+      db.target = data.target || {};
+      db.profil = data.profil || {};
+    }
+    setSyncState('ok');
+    updateBadges();
+    renderView(currentView);
+  }, (err) => {
+    setSyncState('error');
+    showToast('Gagal terhubung ke database!', true);
+  });
+}
+
+async function saveDB() {
+  setSyncState('syncing');
+  try {
+    const docRef = window._fsDoc(window._db_fs, 'sosmedhq', 'data');
+    await window._fsSetDoc(docRef, {
+      admins: db.admins,
+      akuns: db.akuns,
+      dataEntries: db.dataEntries,
+      target: db.target,
+      profil: db.profil,
+    });
+    setSyncState('ok');
+  } catch(e) {
+    setSyncState('error');
+    showToast('Gagal menyimpan: ' + e.message, true);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════
+function fmt(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return (n||0).toString();
+}
+function fmtFull(n) { return (n||0).toLocaleString('id-ID'); }
+function uid() { return Math.random().toString(36).substr(2, 9); }
+function getAdmin(id) { return db.admins.find(a => a.id === id); }
+function getAkun(id) { return db.akuns.find(a => a.id === id); }
+function totalFor(entries, field) { return entries.reduce((s,e) => s + (e[field]||0), 0); }
+
+function updateBadges() {
+  document.getElementById('badge-count').textContent = `${db.admins.length} Admin · ${db.akuns.length} Akun`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════════════
+const VIEW_TITLES = {
+  'input-data': '⚡ Input Data',
+  'riwayat': '📋 Riwayat Data',
+  'kelola-admin': '👥 Kelola Admin',
+  'kelola-akun': '📱 Kelola Akun',
+  'target': '🎯 Set Target',
+  'settings': '⚙ Pengaturan',
+};
+
+function navigate(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+
+  const navItems = document.querySelectorAll('.nav-item');
+  const navMap = ['input-data','riwayat','kelola-admin','kelola-akun','target','settings'];
+  const idx = navMap.indexOf(view);
+  if (idx !== -1 && navItems[idx+2]) navItems[idx+2].classList.add('active'); // +2 for section headers
+
+  // simpler: match by onclick attribute
+  document.querySelectorAll('.nav-item').forEach(el => {
+    if (el.getAttribute('onclick') === `navigate('${view}')`) el.classList.add('active');
+  });
+
+  const viewEl = document.getElementById('view-' + view);
+  if (viewEl) viewEl.classList.add('active');
+  document.getElementById('topbar-title').textContent = VIEW_TITLES[view] || view;
+  renderView(view);
+}
+
+function renderView(view) {
+  updateBadges();
+  if (view === 'input-data') renderInputDataView();
+  else if (view === 'riwayat') renderRiwayat();
+  else if (view === 'kelola-admin') renderKelolaAdmin();
+  else if (view === 'kelola-akun') renderKelolaAkun();
+  else if (view === 'target') renderTarget();
+  else if (view === 'settings') renderSettingsView();
+}
+
+// ══════════════════════════════════════════════════════════════
+// INPUT DATA
+// ══════════════════════════════════════════════════════════════
+function renderInputDataView() {
+  const selAdmin = document.getElementById('input-admin');
+  const cur = selAdmin.value;
+  selAdmin.innerHTML = '<option value="">Pilih admin...</option>' +
+    db.admins.map(a => `<option value="${a.id}" ${cur===a.id?'selected':''}>${a.name}</option>`).join('');
+  populateAkunDropdown();
+}
+
+function populateAkunDropdown() {
+  const adminId = document.getElementById('input-admin').value;
+  const akuns = adminId ? db.akuns.filter(ak => ak.adminId === adminId) : db.akuns;
+  document.getElementById('input-akun').innerHTML = '<option value="">Pilih akun...</option>' +
+    akuns.map(ak => `<option value="${ak.id}">${ak.name} (${ak.platform})</option>`).join('');
+}
+
+function updatePeriodeLabel() {
+  const s = document.getElementById('input-periode-start').value;
+  const e = document.getElementById('input-periode-end').value;
+  const preview = document.getElementById('periode-preview');
+  const hidden = document.getElementById('input-periode');
+  if (s && e) {
+    const MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const ds = new Date(s), de = new Date(e);
+    const label = `${ds.getDate()} ${MONTHS[ds.getMonth()]} – ${de.getDate()} ${MONTHS[de.getMonth()]} ${de.getFullYear()}`;
+    preview.textContent = '📅 ' + label;
+    hidden.value = label;
+  } else {
+    preview.textContent = '';
+    hidden.value = '';
+  }
+}
+
+async function saveData() {
+  const adminId = document.getElementById('input-admin').value;
+  const akunId = document.getElementById('input-akun').value;
+  const periode = document.getElementById('input-periode').value.trim();
+  if (!adminId || !akunId || !periode) { showToast('Lengkapi admin, akun, dan periode!', true); return; }
+
+  const entry = {
+    id: editingEntryId || uid(),
+    adminId, akunId, periode,
+    reach: parseInt(document.getElementById('input-reach').value)||0,
+    visit: parseInt(document.getElementById('input-visit').value)||0,
+    postLike: parseInt(document.getElementById('input-post-like').value)||0,
+    postComment: parseInt(document.getElementById('input-post-comment').value)||0,
+    postSaves: parseInt(document.getElementById('input-post-saves').value)||0,
+    postShare: parseInt(document.getElementById('input-post-share').value)||0,
+    postRepost: parseInt(document.getElementById('input-post-repost').value)||0,
+    reelLike: parseInt(document.getElementById('input-reel-like').value)||0,
+    reelComment: parseInt(document.getElementById('input-reel-comment').value)||0,
+    reelSaves: parseInt(document.getElementById('input-reel-saves').value)||0,
+    reelShare: parseInt(document.getElementById('input-reel-share').value)||0,
+    reelRepost: parseInt(document.getElementById('input-reel-repost').value)||0,
+    like: (parseInt(document.getElementById('input-post-like').value)||0) + (parseInt(document.getElementById('input-reel-like').value)||0),
+    saves: (parseInt(document.getElementById('input-post-saves').value)||0) + (parseInt(document.getElementById('input-reel-saves').value)||0),
+    shares: (parseInt(document.getElementById('input-post-share').value)||0) + (parseInt(document.getElementById('input-reel-share').value)||0),
+    followers: 0,
+  };
+
+  if (editingEntryId) {
+    const idx = db.dataEntries.findIndex(e => e.id === editingEntryId);
+    if (idx !== -1) db.dataEntries[idx] = entry;
+    showToast('Data berhasil diupdate!');
+  } else {
+    db.dataEntries.push(entry);
+    showToast('Data berhasil disimpan!');
+  }
+
+  await saveDB();
+  cancelEdit();
+  clearForm();
+}
+
+function clearForm() {
+  const ids = ['input-reach','input-visit',
+    'input-post-like','input-post-comment','input-post-saves','input-post-share','input-post-repost',
+    'input-reel-like','input-reel-comment','input-reel-saves','input-reel-share','input-reel-repost'];
+  ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('input-periode-start').value = '';
+  document.getElementById('input-periode-end').value = '';
+  document.getElementById('periode-preview').textContent = '';
+  document.getElementById('input-periode').value = '';
+}
+
+function cancelEdit() {
+  editingEntryId = null;
+  document.getElementById('edit-mode-label').textContent = '';
+  document.getElementById('save-btn').textContent = '💾 Simpan Data';
+  document.getElementById('cancel-edit-btn').style.display = 'none';
+  clearForm();
+  // Reset dropdowns
+  document.getElementById('input-admin').value = '';
+  document.getElementById('input-akun').innerHTML = '<option value="">Pilih akun...</option>';
+}
+
+function editEntry(id) {
+  const e = db.dataEntries.find(x => x.id === id);
+  if (!e) return;
+  editingEntryId = id;
+  navigate('input-data');
+
+  // Populate admin/akun
+  const adminSel = document.getElementById('input-admin');
+  adminSel.innerHTML = '<option value="">Pilih admin...</option>' +
+    db.admins.map(a => `<option value="${a.id}" ${a.id===e.adminId?'selected':''}>${a.name}</option>`).join('');
+  populateAkunDropdown();
+  setTimeout(() => {
+    document.getElementById('input-akun').value = e.akunId;
+  }, 50);
+
+  // Parse periode back to dates
+  // periode format: "15 Apr – 21 Apr 2026"
+  document.getElementById('input-reach').value = e.reach || '';
+  document.getElementById('input-visit').value = e.visit || '';
+  document.getElementById('input-post-like').value = e.postLike || '';
+  document.getElementById('input-post-comment').value = e.postComment || '';
+  document.getElementById('input-post-saves').value = e.postSaves || '';
+  document.getElementById('input-post-share').value = e.postShare || '';
+  document.getElementById('input-post-repost').value = e.postRepost || '';
+  document.getElementById('input-reel-like').value = e.reelLike || '';
+  document.getElementById('input-reel-comment').value = e.reelComment || '';
+  document.getElementById('input-reel-saves').value = e.reelSaves || '';
+  document.getElementById('input-reel-share').value = e.reelShare || '';
+  document.getElementById('input-reel-repost').value = e.reelRepost || '';
+  document.getElementById('input-periode').value = e.periode;
+  document.getElementById('periode-preview').textContent = '📅 ' + e.periode;
+
+  document.getElementById('edit-mode-label').textContent = `(Edit: ${e.periode})`;
+  document.getElementById('save-btn').textContent = '✏ Update Data';
+  document.getElementById('cancel-edit-btn').style.display = 'inline-flex';
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════════════════════════
+// RIWAYAT DATA
+// ══════════════════════════════════════════════════════════════
+function renderRiwayat() {
+  // Populate filter dropdowns
+  const filterAdmin = document.getElementById('filter-admin-riwayat');
+  const curAdmin = filterAdmin.value;
+  filterAdmin.innerHTML = '<option value="">Semua Admin</option>' +
+    db.admins.map(a => `<option value="${a.id}" ${curAdmin===a.id?'selected':''}>${a.name}</option>`).join('');
+
+  const filterAkun = document.getElementById('filter-akun-riwayat');
+  const curAkun = filterAkun.value;
+  filterAkun.innerHTML = '<option value="">Semua Akun</option>' +
+    db.akuns.map(ak => `<option value="${ak.id}" ${curAkun===ak.id?'selected':''}>${ak.name}</option>`).join('');
+
+  const adminFilter = filterAdmin.value;
+  const akunFilter = filterAkun.value;
+
+  let entries = [...db.dataEntries].reverse();
+  if (adminFilter) entries = entries.filter(e => e.adminId === adminFilter);
+  if (akunFilter) entries = entries.filter(e => e.akunId === akunFilter);
+
+  document.getElementById('riwayat-count-label').textContent = `${entries.length} entri`;
+
+  document.getElementById('riwayat-tbody').innerHTML = entries.length ? entries.map(e => {
+    const a = getAdmin(e.adminId), ak = getAkun(e.akunId);
+    return `<tr>
+      <td><div class="td-name"><div class="acct-dot" style="background:${a?.color||'#777'};display:inline-block;"></div>${a?.name||'—'}</div></td>
+      <td>${ak?.name||'—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap;">${e.periode}</td>
+      <td>${fmt(e.reach)}</td><td>${fmt(e.visit||0)}</td>
+      <td>${fmt(e.postLike||0)}</td><td>${fmt(e.postComment||0)}</td><td>${fmt(e.postSaves||0)}</td><td>${fmt(e.postShare||0)}</td><td>${fmt(e.postRepost||0)}</td>
+      <td>${fmt(e.reelLike||0)}</td><td>${fmt(e.reelComment||0)}</td><td>${fmt(e.reelSaves||0)}</td><td>${fmt(e.reelShare||0)}</td><td>${fmt(e.reelRepost||0)}</td>
+      <td>
+        <div class="data-row-actions">
+          <button class="btn btn-secondary btn-sm" onclick="editEntry('${e.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteEntry('${e.id}')">Hapus</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="16" style="text-align:center;padding:30px;color:var(--text3);">Belum ada data.</td></tr>`;
+}
+
+async function deleteEntry(id) {
+  if (!confirm('Hapus entri data ini?')) return;
+  db.dataEntries = db.dataEntries.filter(e => e.id !== id);
+  await saveDB();
+  showToast('Entri dihapus');
+}
+
+// ══════════════════════════════════════════════════════════════
+// KELOLA ADMIN
+// ══════════════════════════════════════════════════════════════
+function renderKelolaAdmin() {
+  document.getElementById('admin-list').innerHTML = db.admins.length ? db.admins.map(a => `
+    <div class="acct-row">
+      <div class="acct-dot" style="background:${a.color};"></div>
+      <div class="acct-name">${a.name}</div>
+      <div style="font-size:10px;color:var(--text3);margin-right:8px;font-family:'DM Mono',monospace;">${db.akuns.filter(ak=>ak.adminId===a.id).length} akun</div>
+      <div style="display:flex;gap:5px;">
+        <button class="btn btn-secondary btn-sm" onclick="openEditAdmin('${a.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAdmin('${a.id}')">Hapus</button>
+      </div>
+    </div>`).join('') : '<div style="color:var(--text3);font-size:12px;padding:8px 0;">Belum ada admin</div>';
+}
+
+function openEditAdmin(id) {
+  const a = getAdmin(id);
+  if (!a) return;
+  document.getElementById('edit-admin-id').value = id;
+  document.getElementById('edit-admin-name').value = a.name;
+  document.getElementById('edit-admin-color').value = a.color;
+  document.getElementById('edit-admin-panel').style.display = 'block';
+  document.getElementById('edit-admin-panel').scrollIntoView({behavior:'smooth'});
+}
+
+async function saveEditAdmin() {
+  const id = document.getElementById('edit-admin-id').value;
+  const name = document.getElementById('edit-admin-name').value.trim();
+  const color = document.getElementById('edit-admin-color').value;
+  if (!name) { showToast('Nama tidak boleh kosong!',true); return; }
+  const a = getAdmin(id);
+  if (a) { a.name = name; a.color = color; }
+  await saveDB();
+  cancelEditAdmin();
+  showToast('Admin berhasil diupdate!');
+}
+
+function cancelEditAdmin() {
+  document.getElementById('edit-admin-panel').style.display = 'none';
+  document.getElementById('edit-admin-id').value = '';
+}
+
+async function addAdmin() {
+  const name = document.getElementById('new-admin-name').value.trim();
+  const color = document.getElementById('new-admin-color').value;
+  if (!name) { showToast('Masukkan nama admin!',true); return; }
+  db.admins.push({ id: uid(), name, color });
+  await saveDB();
+  document.getElementById('new-admin-name').value = '';
+  showToast('Admin berhasil ditambahkan!');
+}
+
+async function deleteAdmin(id) {
+  if (!confirm('Hapus admin ini? Data entri milik admin ini tidak ikut terhapus.')) return;
+  db.admins = db.admins.filter(a => a.id !== id);
+  await saveDB();
+  showToast('Admin dihapus');
+}
+
+// ══════════════════════════════════════════════════════════════
+// KELOLA AKUN
+// ══════════════════════════════════════════════════════════════
+function renderKelolaAkun() {
+  document.getElementById('new-akun-admin').innerHTML = '<option value="">Pilih admin...</option>' +
+    db.admins.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+  document.getElementById('akun-list').innerHTML = db.akuns.length ? db.akuns.map(ak => {
+    const admin = getAdmin(ak.adminId);
+    return `<div class="acct-row">
+      <div class="acct-dot" style="background:${admin?.color||'#777'};"></div>
+      <div style="flex:1;">
+        <div class="acct-name" style="font-size:12px;">${ak.name}</div>
+        <div style="font-size:10px;color:var(--text3);">${ak.platform} · ${admin?.name||'?'}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteAkun('${ak.id}')">Hapus</button>
+    </div>`;
+  }).join('') : '<div style="color:var(--text3);font-size:12px;padding:8px 0;">Belum ada akun</div>';
+}
+
+async function addAkun() {
+  const name = document.getElementById('new-akun-name').value.trim();
+  const platform = document.getElementById('new-akun-platform').value;
+  const adminId = document.getElementById('new-akun-admin').value;
+  if (!name||!adminId) { showToast('Lengkapi nama akun dan admin!',true); return; }
+  db.akuns.push({ id: uid(), name, platform, adminId });
+  await saveDB();
+  document.getElementById('new-akun-name').value = '';
+  showToast('Akun berhasil ditambahkan!');
+}
+
+async function deleteAkun(id) {
+  if (!confirm('Hapus akun ini?')) return;
+  db.akuns = db.akuns.filter(a => a.id !== id);
+  await saveDB();
+  showToast('Akun dihapus');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TARGET
+// ══════════════════════════════════════════════════════════════
+function renderTarget() {
+  document.getElementById('target-reach').value = db.target.reach || '';
+  document.getElementById('target-like').value = db.target.like || '';
+  document.getElementById('target-saves').value = db.target.saves || '';
+  document.getElementById('target-shares').value = db.target.shares || '';
+  document.getElementById('target-bulan').value = db.target.bulan || '';
+
+  const allEntries = db.dataEntries;
+  document.getElementById('target-progress-panel').innerHTML = [
+    {key:'reach',label:'Reach',color:'#1d9e75'},
+    {key:'like',label:'Like',color:'#7f77dd'},
+    {key:'saves',label:'Saves',color:'#ef9f27'},
+    {key:'shares',label:'Shares',color:'#d85a30'}
+  ].map(f => {
+    const actual = totalFor(allEntries, f.key), tval = db.target[f.key]||0;
+    const pct = tval ? Math.min(Math.round(actual/tval*100),100) : 0;
+    return `<div class="progress-item">
+      <div class="progress-label">
+        <span>${f.label} <span style="color:var(--text3);font-family:'DM Mono',monospace;font-size:10px;">${fmt(actual)} / ${fmt(tval)}</span></span>
+        <span class="progress-pct ${pct>=85?'up':pct>=65?'':'dn'}">${pct}%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${f.color};"></div></div>
+    </div>`;
+  }).join('');
+}
+
+async function saveTarget() {
+  db.target.reach = parseInt(document.getElementById('target-reach').value)||0;
+  db.target.like = parseInt(document.getElementById('target-like').value)||0;
+  db.target.saves = parseInt(document.getElementById('target-saves').value)||0;
+  db.target.shares = parseInt(document.getElementById('target-shares').value)||0;
+  db.target.bulan = document.getElementById('target-bulan').value.trim();
+  await saveDB();
+  showToast('Target disimpan!');
+}
+
+// ══════════════════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════════════════
+function renderSettingsView() {
+  const p = db.profil || {};
+  document.getElementById('profil-appname').value = p.appname || 'SOSMED SAYGROUP';
+  document.getElementById('profil-orgname').value = p.orgname || 'Next Level Up';
+}
+
+function switchSettingsTab(tab, btn) {
+  document.querySelectorAll('.settings-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('stab-' + tab).classList.add('active');
+}
+
+async function saveProfilDashboard() {
+  db.profil = {
+    appname: document.getElementById('profil-appname').value.trim() || 'SOSMED SAYGROUP',
+    orgname: document.getElementById('profil-orgname').value.trim() || 'Next Level Up',
+  };
+  await saveDB();
+  showToast('Profil dashboard disimpan!');
+}
+
+async function resetDataOnly() {
+  if (!confirm('Hapus semua data entri? Tindakan ini tidak bisa dibatalkan.')) return;
+  db.dataEntries = [];
+  await saveDB();
+  showToast('Semua data entri dihapus');
+}
+
+async function resetAll() {
+  const confirmText = prompt('Ketik "RESET" untuk mengkonfirmasi Factory Reset:');
+  if (confirmText !== 'RESET') { showToast('Factory Reset dibatalkan', true); return; }
+  db = {
+    admins: [], akuns: [], dataEntries: [], target: {}, profil: { appname: 'SOSMED SAYGROUP', orgname: 'Next Level Up' }
+  };
+  await saveDB();
+  showToast('Factory Reset selesai!');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, isError=false) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-dot').className = 'toast-dot' + (isError?' red':'');
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════════════════════
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-label').textContent = isLight ? 'Light' : 'Dark';
+  localStorage.setItem('theme-admin', isLight ? 'light' : 'dark');
+}
+(function() {
+  if (localStorage.getItem('theme-admin') === 'light') {
+    document.body.classList.add('light');
+    const lbl = document.getElementById('theme-label');
+    if (lbl) lbl.textContent = 'Light';
+  }
+})();
+
+// ══════════════════════════════════════════════════════════════
+// MOBILE SIDEBAR
+// ══════════════════════════════════════════════════════════════
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const hamburger = document.getElementById('hamburger');
+  const isOpen = sidebar.classList.toggle('open');
+  overlay.classList.toggle('open', isOpen);
+  hamburger.classList.toggle('open', isOpen);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => { if (window.innerWidth <= 768) closeSidebar(); });
+});
+
+// Login on Enter
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>
