@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOSMED SAYGROUP · Pilih Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f1117;
+      --surface:   #181b25;
+      --border:    rgba(255,255,255,0.07);
+      --purple:    #7b67f8;
+      --purple-2:  #a48fff;
+      --teal:      #38d9a9;
+      --teal-2:    #63e8c0;
+      --text:      #e8eaf0;
+      --muted:     #7a7f96;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Ambient glow blobs ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.13;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 { width: 600px; height: 600px; background: var(--purple); top: -150px; left: -150px; }
+    .blob-2 { width: 500px; height: 500px; background: var(--teal);   bottom: -100px; right: -100px; }
+
+    /* ── Main layout ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      gap: 56px;
+    }
+
+    /* ── Header / branding ── */
+    .header {
+      text-align: center;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .logo-box {
+      width: 36px; height: 36px;
+      background: var(--purple);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+    }
+
+    .logo-box svg { width: 20px; height: 20px; }
+
+    .brand-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-name span { color: var(--purple); }
+
+    .tagline-chip {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 14px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--purple);
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    /* ── Cards grid ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 760px;
+    }
+
+    /* ── Individual card ── */
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .card:nth-child(2) { animation-delay: 0.12s; }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+
+    /* Coloured top border line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 20px 20px 0 0;
+      background: var(--card-accent);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .card:hover::before { opacity: 1; }
+
+    /* Inner glow on hover */
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: radial-gradient(ellipse at 50% 0%, var(--card-glow) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .card:hover::after { opacity: 1; }
+
+    .card-purple {
+      --card-accent: linear-gradient(90deg, var(--purple), var(--purple-2));
+      --card-glow:   rgba(123, 103, 248, 0.12);
+    }
+    .card-teal {
+      --card-accent: linear-gradient(90deg, var(--teal), var(--teal-2));
+      --card-glow:   rgba(56, 217, 169, 0.1);
+    }
+
+    /* Icon badge */
+    .card-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 24px;
+      font-size: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-purple .card-icon { background: rgba(123,103,248,0.15); color: var(--purple-2); }
+    .card-teal   .card-icon { background: rgba(56,217,169,0.12);  color: var(--teal-2);   }
+
+    /* Pill badge */
+    .card-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-purple .card-badge { background: rgba(123,103,248,0.18); color: var(--purple-2); }
+    .card-teal   .card-badge { background: rgba(56,217,169,0.15);  color: var(--teal-2);   }
+
+    .card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 400;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* CTA row */
+    .card-cta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 28px;
+      font-size: 13px;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+      transition: gap 0.2s ease;
+    }
+
+    .card-purple .card-cta { color: var(--purple-2); }
+    .card-teal   .card-cta { color: var(--teal-2);   }
+
+    .card:hover .card-cta { gap: 10px; }
+
+    .card-cta-arrow {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .card-purple .card-cta-arrow { background: rgba(123,103,248,0.2); }
+    .card-teal   .card-cta-arrow { background: rgba(56,217,169,0.15); }
+
+    .card:hover .card-cta-arrow { transform: translateX(2px); }
+
+    /* ── Stat pills inside cards ── */
+    .card-stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 10px;
+    }
+
+    .stat-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+    }
+
+    .card-purple .stat-dot { background: var(--purple); }
+    .card-teal   .stat-dot { background: var(--teal);   }
+
+    /* ── Footer ── */
+    .footer {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      .cards { grid-template-columns: 1fr; }
+      .card  { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="page">
+
+    <!-- Branding -->
+    <div class="header">
+      <div class="logo-row">
+        <div class="logo-box">
+          <!-- Leaf icon matching SayGroup brand -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.5 2 3 7 3 12c0 2.5 1 4.8 2.6 6.5C7.5 20.8 9.6 22 12 22s4.5-1.2 6.4-3.5C20 17 21 14.5 21 12c0-5-3.5-10-9-10z" fill="white" fill-opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="brand-name">SOSMED <span>SAYGROUP</span></div>
+      </div>
+      <div class="tagline-chip">Akses Internal · Tim Sosial Media</div>
+      <h1>Pilih <em>Dashboard</em><br/>yang ingin diakses</h1>
+      <p class="subtitle">Gunakan akun yang sudah didaftarkan oleh admin untuk masuk.</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+
+      <!-- Card 1: Perkembangan Akun Sosmed -->
+      <a class="card card-purple" href="./sosmed/">
+        <div class="card-icon">📊</div>
+        <div class="card-badge">Sosial Media</div>
+        <div class="card-title">Dashboard Perkembangan Akun Sosmed</div>
+        <div class="card-desc">Pantau performa, reach, engagement, dan pertumbuhan seluruh akun sosial media SAYGROUP secara real-time.</div>
+        <div class="card-stats">
+          <span class="stat-pill"><span class="stat-dot"></span>Live Data</span>
+          <span class="stat-pill"><span class="stat-dot"></span>AI Anomali</span>
+          <span class="stat-pill"><span class="stat-dot"></span>Multi Admin</span>
+        </div>
+        <div class="card-cta">
+          Masuk ke Dashboard
+          <span class="card-cta-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- Card 2: Traffic Lead Organik -->
+      <a class="card card-teal" href="./traffic/">
+        <div class="card-icon">📈</div>
+        <div class="card-badge">Lead Organik</div>
+        <div class="card-title">Dashboard Traffic Lead Organik</div>
+        <div class="card-desc">Lacak dan analisis traffic leads organik, konversi, serta performa funnel pemasaran SAYGROUP secara menyeluruh.</div>
+        <div class="card-stats">
+          <span class="stat-pill"><span class="stat-dot"></span>Konversi</span>
+          <span class="stat-pill"><span class="stat-dot"></span>Funnel</span>
+          <span class="stat-pill"><span class="stat-dot"></span>Sumber Traffic</span>
+        </div>
+        <div class="card-cta">
+          Masuk ke Dashboard
+          <span class="card-cta-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">Hanya untuk penggunaan internal tim SOSMED SAYGROUP</div>
+
+  </div>
+
+</body>
+</html>
