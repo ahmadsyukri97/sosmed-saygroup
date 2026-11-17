@@ -7,21 +7,26 @@
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:linear-gradient(180deg,#fff4ea 0,var(--bg) 220px) no-repeat,var(--bg);color:var(--tx);font:14px/1.45 "Poppins",system-ui,Arial,sans-serif;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
 .w{max-width:none;width:100%;margin:0;padding:18px clamp(14px,2.5vw,36px)}
-h1{font-size:20px;margin:0}.sub{color:var(--mut);font-size:12px;margin:2px 0 14px}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-.tabs button,select,input{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:8px 12px}
-.tabs button{cursor:pointer}.tabs button.on{background:#ffe2cc;border-color:#ffb27a;color:#b14a00;font-weight:600}
-input{flex:1;min-width:140px}
-.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+h1{font-size:22px;margin:0}.hd{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin-bottom:16px}
+.sub{display:inline-flex;align-items:center;gap:8px;color:var(--mut);font-size:12px;background:var(--card);border:1px solid var(--bd);border-radius:99px;padding:6px 14px;margin:0}.sub::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:#c9cfe0}.sub.ok::before{background:#2fbf8a}.sub.bad::before{background:#e5675a}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:10px;box-shadow:0 1px 3px rgba(80,100,160,.07)}
+.tabs{display:inline-flex;gap:4px;background:#f1f4fb;padding:4px;border-radius:12px}
+.tabs button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--mut);border-radius:9px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:#ffe2cc;color:#b14a00;font-weight:600}
+select,input{font:inherit;font-size:13px;height:40px;border:1px solid var(--bd);background-color:var(--card);color:var(--tx);border-radius:10px;padding:0 12px}
+select{appearance:none;-webkit-appearance:none;padding-right:32px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2374809c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;cursor:pointer}
+input{flex:1;min-width:200px;padding-left:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2374809c' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center}
+select:focus,input:focus{outline:2px solid #ffd0ad;border-color:#ffb27a}
+.k{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:16px}
 .c{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;box-shadow:0 1px 3px rgba(80,100,160,.07)}
 .c>b{display:block;font-size:22px}.c span{color:var(--mut);font-size:12px}
-.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin-bottom:14px}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px}
 .t{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;margin:8px 0 4px}.t i{display:block;height:100%;background:var(--pri)}
-.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:12px}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:14px;box-shadow:0 1px 3px rgba(80,100,160,.07)}
 table{border-collapse:collapse;width:100%;min-width:900px}
-th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
-th{background:var(--hd);color:var(--hdtx);font-size:12px;position:sticky;top:0}td.n{text-align:right}
-tr.r{cursor:pointer}tr.r:hover td{background:#fff7f0}
+th,td{padding:10px 9px;font-size:13px;vertical-align:middle;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{background:var(--hd);color:var(--hdtx);font-size:12px;font-weight:600;position:sticky;top:0}td.n{text-align:right}
+tr.r{cursor:pointer}.nob th:nth-child(2),.nob td:nth-child(2){display:none}tr.r:hover td{background:#fff7f0}
 
 .p{padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600}
 .s0{background:var(--okbg);color:var(--ok)}.s1{background:var(--nobg);color:var(--no)}.s2{background:var(--badbg);color:var(--bad)}
@@ -43,10 +48,26 @@ td.d,tr.r:hover td{}
 .ins{list-style:none;margin:0;padding:0}.ins li{border-left:4px solid var(--bd);padding:6px 10px;margin:6px 0;background:var(--bg);border-radius:0 8px 8px 0;font-size:13px}
 .ins .good{border-color:var(--ok)}.ins .warn{border-color:var(--no)}.ins .bad{border-color:var(--bad)}.ins .info{border-color:var(--ch2)}
 .lg{display:flex;gap:12px;font-size:11px;color:var(--mut);margin-top:6px}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+@media(max-width:1000px){.k{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){
+.w{padding:14px 12px}h1{font-size:20px}
+.bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
+.tabs{grid-column:1/-1;display:flex}.tabs button{flex:1;padding:8px 6px;font-size:12.5px}
+input{grid-column:1/-1;min-width:0}select{width:100%;min-width:0}
+.k{gap:8px;margin-bottom:12px}.c{padding:10px 12px}.c>b{font-size:18px}
+.pg{grid-template-columns:1fr;gap:8px}
+.tw{background:none;border:0;box-shadow:none;overflow:visible}
+table{min-width:0;display:block}thead{display:none}tbody{display:block}
+tr.r{display:flex;flex-wrap:wrap;position:relative;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(80,100,160,.07)}
+tr.r td{display:block;width:50%;border:0;padding:5px 0;white-space:normal;text-align:left!important}
+tr.r td::before{content:attr(data-l);display:block;font-size:11px;color:var(--mut)}
+tr.r td.nm{order:-1;width:100%;font-weight:700;font-size:15px;padding:0 44px 8px 0}tr.r td.nm::before{display:none}
+tr.r td.igc{position:absolute;top:10px;right:12px;width:auto;padding:0}tr.r td.igc::before{display:none}
+tbody tr:not(.r) td{display:block;padding:14px}
+}
 #m{color:var(--mut);font-size:12px;margin:10px 0}
 </style></head><body><div class="w">
-<h1>Portal Monitoring KOL</h1>
-<div class="sub" id="src">SAYGROUP · Saycal &amp; Generasi Andalan</div>
+<div class="hd"><h1>Portal Monitoring KOL</h1><div class="sub" id="src">SAYGROUP · Saycal &amp; Generasi Andalan</div></div>
 <div class="bar"><div class="tabs" id="tabs"></div>
 <select id="bln"></select>
 <select id="tp"><option value="">Semua tipe</option><option>Baru</option><option>Lama</option></select>
@@ -79,8 +100,8 @@ x._vr=x._r.reduce((a,z)=>a+z[1],0);x._vs=x._s.reduce((a,z)=>a+z[1],0);
 x._cr=N(x["CPM Reels"])||cpm(x._b,x._r);x._cs=N(x["CPM Stories"])||cpm(x._b,x._s);x._key=x.Brand+"|"+x["Nama KOL"];return x}
 async function load(){const s=document.getElementById("src");
 if(!CONFIG.CSV_URL){D=DEMO.map(norm);s.textContent="Data tertanam, belum terhubung ke Google Sheets (isi CONFIG.CSV_URL agar otomatis update)";return draw()}
-try{const r=await fetch(CONFIG.CSV_URL,{cache:"no-store"});if(!r.ok)throw 0;D=csv(await r.text()).map(norm);s.textContent="Terhubung ke Google Sheets · update "+new Date().toLocaleTimeString("id-ID")}
-catch(e){D=DEMO.map(norm);s.textContent="Gagal membaca Google Sheets — menampilkan data contoh"}draw()}
+try{const r=await fetch(CONFIG.CSV_URL,{cache:"no-store"});if(!r.ok)throw 0;D=csv(await r.text()).map(norm);s.textContent="Terhubung ke Google Sheets · update "+new Date().toLocaleTimeString("id-ID");s.className="sub ok"}
+catch(e){D=DEMO.map(norm);s.textContent="Gagal membaca Google Sheets — menampilkan data contoh";s.className="sub bad"}draw()}
 function opts(){const b=document.getElementById("bln"),l=[...new Set(D.map(x=>x["Bulan"]).filter(Boolean))].sort((a,c)=>mk(a)-mk(c));const cur=b.value||(first?(l[l.length-1]||""):"");first=false;
 b.innerHTML='<option value="">Semua bulan</option>'+l.map(x=>`<option${x==cur?" selected":""}>${E(x)}</option>`).join("")}
 const U=g=>new Set(g.map(x=>x._key)).size,R=n=>n?"Rp"+F(n):"–";
@@ -94,7 +115,7 @@ const kp=[["Total baris kerja sama",f.length],["KOL aktif (unik)",U(f.filter(x=>
 k.innerHTML=kp.map(a=>`<div class="c"><b>${a[1]}</b><span>${a[0]}</span></div>`).join("");
 pg.innerHTML=["Saycal","Generasi Andalan"].map(b=>{const g=f.filter(x=>x.Brand==b),s=g.filter(x=>x._pos=="Selesai").length,p=g.length?Math.round(s/g.length*100):0;
 return `<div class="c"><b style="font-size:15px">${b}</b><div class="t"><i style="width:${p}%"></i></div><span>${s} dari ${g.length} selesai posting (${p}%) · ${U(g.filter(x=>x._ker=="Aktif"))} KOL aktif · ${g.filter(x=>x._tipe=="Baru").length} baru / ${g.filter(x=>x._tipe=="Lama").length} lama</span></div>`}).join("");
-view=f;tb.innerHTML=f.map((x,i)=>`<tr class="r" data-i="${i}"><td>${E(x.Brand)}</td><td>${E(x.Bulan)}</td><td>${E(x["Nama KOL"])}</td><td>${x._ig?`<a class="igi" href="${E(x._ig)}" target="_blank" rel="noopener noreferrer" title="Buka Instagram" aria-label="Buka Instagram ${E(x["Nama KOL"])}">${IGI}</a>`:'<span class="mu">–</span>'}</td><td>${x._tipe}</td><td>${chip(x._ker,"Aktif","Nonaktif")}</td><td>${E(x._deliv)}</td><td>${chip(x._pos,"Selesai","Belum")}</td><td class="n">${R(x._b)}</td><td class="n">${x._vr?F(x._vr):"–"}</td><td class="n">${x._vs?F(x._vs):"–"}</td><td class="n">${R(x._cr)}</td><td class="n">${R(x._cs)}</td></tr>`).join("")||'<tr><td colspan="13">Tidak ada data.</td></tr>';
+view=f;tb.closest('table').classList.toggle('nob',!!bln.value);tb.innerHTML=f.map((x,i)=>`<tr class="r" data-i="${i}"><td data-l="Brand">${E(x.Brand)}</td><td data-l="Bulan">${E(x.Bulan)}</td><td class="nm" data-l="Nama KOL">${E(x["Nama KOL"])}</td><td class="igc">${x._ig?`<a class="igi" href="${E(x._ig)}" target="_blank" rel="noopener noreferrer" title="Buka Instagram" aria-label="Buka Instagram ${E(x["Nama KOL"])}">${IGI}</a>`:'<span class="mu">–</span>'}</td><td data-l="Tipe">${x._tipe}</td><td data-l="Kerjasama">${chip(x._ker,"Aktif","Nonaktif")}</td><td data-l="Deliverables">${E(x._deliv)}</td><td data-l="Posting">${chip(x._pos,"Selesai","Belum")}</td><td class="n" data-l="Biaya/konten">${R(x._b)}</td><td class="n" data-l="Views Reels">${x._vr?F(x._vr):"–"}</td><td class="n" data-l="Views Stories">${x._vs?F(x._vs):"–"}</td><td class="n" data-l="CPM Reels">${R(x._cr)}</td><td class="n" data-l="CPM Stories">${R(x._cs)}</td></tr>`).join("")||'<tr><td colspan="13">Tidak ada data.</td></tr>';
 }
 const C=n=>n>=1e6?(n/1e6).toFixed(1).replace(".",",")+"jt":n>=1e4?Math.round(n/1e3)+"rb":n>=1e3?(n/1e3).toFixed(1).replace(".",",")+"rb":String(Math.round(n));
 const av=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:0,pct=(a,b)=>b?Math.round((a/b-1)*100):null;
